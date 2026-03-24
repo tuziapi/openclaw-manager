@@ -194,3 +194,31 @@ button:disabled {
   @apply text-gray-400 hover:text-white hover:bg-dark-600;
   @apply transition-all duration-200;
 }
+
+/* 安装页统一样式 */
+.install-card {
+  @apply p-4 rounded-xl bg-dark-600 border border-dark-500 text-left text-sm text-gray-200;
+}
+
+.install-action-btn {
+  @apply px-3 py-1.5 rounded-full text-xs font-semibold;
+  @apply bg-claw-500/20 text-claw-200 border border-claw-400/40;
+  @apply transition-all;
+}
+
+.group:hover .install-action-btn {
+  @apply bg-claw-500/30 border-claw-300/60 text-white;
+}
+
+.segmented-control {
+  @apply inline-flex rounded-lg border border-dark-500 bg-dark-700 p-1;
+}
+
+.segmented-item {
+  @apply px-3 py-1.5 rounded-md text-xs font-medium transition-colors;
+  @apply text-gray-300 hover:text-white hover:bg-dark-500;
+}
+
+.segmented-item.active {
+  @apply bg-claw-500/20 text-claw-100 border border-claw-400/40;
+}
