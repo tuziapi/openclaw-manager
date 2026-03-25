@@ -173,12 +173,14 @@ function App() {
   const renderOpenclawPage = () => {
     const pages: Record<OpenclawSubPageType, JSX.Element> = {
       setup: (
-        <Setup
-          onComplete={async () => {
-            await checkEnvironment();
-            handleOpenclawSubPage('dashboard');
-          }}
-        />
+        <div className="h-full overflow-y-auto scroll-container pr-2">
+          <Setup
+            onComplete={async () => {
+              await checkEnvironment();
+              handleOpenclawSubPage('dashboard');
+            }}
+          />
+        </div>
       ),
       dashboard: (
         <Dashboard
