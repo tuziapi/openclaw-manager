@@ -93,12 +93,9 @@ pub fn run_command(cmd: &str, args: &[&str]) -> io::Result<Output> {
     let mut command = Command::new(cmd);
     command.args(args);
 
-    // 在非 Windows 系统上使用扩展的 PATH
-    #[cfg(not(windows))]
-    {
-        let extended_path = get_extended_path();
-        command.env("PATH", extended_path);
-    }
+    // GUI 进程的 PATH 可能不完整，统一注入扩展 PATH
+    let extended_path = get_extended_path();
+    command.env("PATH", extended_path);
 
     #[cfg(windows)]
     command.creation_flags(CREATE_NO_WINDOW);
@@ -733,10 +730,17 @@ pub fn spawn_openclaw_gateway() -> io::Result<()> {
 
 /// 检查命令是否存在
 pub fn command_exists(cmd: &str) -> bool {
+    if cmd.trim().is_empty() {
+        return false;
+    }
+
+    let extended_path = get_extended_path();
+
     if platform::is_windows() {
         // Windows: 使用 where 命令
         let mut command = Command::new("where");
         command.arg(cmd);
+        command.env("PATH", &extended_path);
 
         #[cfg(windows)]
         command.creation_flags(CREATE_NO_WINDOW);
@@ -746,11 +750,30 @@ pub fn command_exists(cmd: &str) -> bool {
             .map(|o| o.status.success())
             .unwrap_or(false)
     } else {
-        // Unix: 使用 which 命令
-        Command::new("which")
+        // Unix: 先用扩展 PATH 做快速检测
+        let quick_hit = Command::new("which")
             .arg(cmd)
+            .env("PATH", &extended_path)
             .output()
             .map(|o| o.status.success())
-            .unwrap_or(false)
+            .unwrap_or(false);
+        if quick_hit {
+            return true;
+        }
+
+        // 回退：通过登录 shell 加载用户 rc，再检测命令
+        let safe_cmd = cmd
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-' || c == '.');
+        if !safe_cmd {
+            return false;
+        }
+
+        run_bash_output(&format!(
+            "source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null; command -v {} >/dev/null 2>&1 && echo ok",
+            cmd
+        ))
+        .map(|out| out.trim() == "ok")
+        .unwrap_or(false)
     }
 }
