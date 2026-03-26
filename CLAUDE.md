@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-OpenClaw Manager is a cross-platform desktop app for managing AI assistant services, built with Tauri 2.0 + React 18 + TypeScript + Rust. It provides a unified interface for configuring AI providers, messaging channels, and modules like ClaudeCode and Codex. Primary focus is Tuzi API integration.
+AI Manager is a cross-platform desktop app for managing AI assistant services (including the OpenClaw CLI stack under `~/.openclaw/`), built with Tauri 2.0 + React 18 + TypeScript + Rust. It provides a unified interface for configuring AI providers, messaging channels, and modules like ClaudeCode and Codex. Primary focus is Tuzi API integration.
 
 ## Build & Development Commands
 

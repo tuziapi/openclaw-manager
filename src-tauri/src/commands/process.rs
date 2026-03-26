@@ -80,12 +80,9 @@ pub async fn get_module_statuses() -> Result<ModuleStatusOverview, String> {
     };
     let claude_route = get_claude_current_route();
 
-    let node_installed = shell::command_exists("node");
-    let node_version = if node_installed {
-        shell::run_command_output("node", &["--version"]).ok()
-    } else {
-        None
-    };
+    // 与 check_environment 一致：不以裸 PATH 的 which 为准，直接带扩展 PATH 调 node
+    let node_version = shell::run_command_output("node", &["--version"]).ok();
+    let node_installed = node_version.is_some();
 
     Ok(ModuleStatusOverview {
         node_installed,
@@ -188,15 +185,16 @@ pub async fn check_port_in_use(port: u16) -> Result<bool, String> {
 #[command]
 pub async fn get_node_version() -> Result<Option<String>, String> {
     info!("[进程检查] 获取 Node.js 版本...");
-    if !shell::command_exists("node") {
-        info!("[进程检查] Node.js 未安装");
-        return Ok(None);
-    }
-
     match shell::run_command_output("node", &["--version"]) {
         Ok(version) => {
-            info!("[进程检查] Node.js 版本: {}", version);
-            Ok(Some(version))
+            let v = version.trim().to_string();
+            if v.is_empty() || !v.starts_with('v') {
+                info!("[进程检查] Node.js 未安装或输出异常");
+                Ok(None)
+            } else {
+                info!("[进程检查] Node.js 版本: {}", v);
+                Ok(Some(v))
+            }
         }
         Err(e) => {
             debug!("[进程检查] 获取 Node.js 版本失败: {}", e);

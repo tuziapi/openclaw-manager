@@ -1,8 +1,8 @@
 [package]
-name = "openclaw-manager"
+name = "ai-manager"
 version = "0.0.14"
-description = "OpenClaw 跨平台管理工具"
-authors = ["OpenClaw Team"]
+description = "AI Manager — 跨平台 AI 助手与服务管理"
+authors = ["Tuzi API"]
 edition = "2021"
 
 [build-dependencies]

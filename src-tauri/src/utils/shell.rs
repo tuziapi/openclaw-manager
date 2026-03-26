@@ -4,6 +4,7 @@ use log::{debug, info, warn};
 use std::collections::HashMap;
 use std::fs::OpenOptions;
 use std::io;
+use std::path::Path;
 use std::process::{Command, Output, Stdio};
 use std::time::{Duration as StdDuration, Instant};
 use tokio::time::{timeout, Duration as TokioDuration};
@@ -56,10 +57,14 @@ pub fn get_extended_path() -> String {
                     );
                 }
             }
-            // 也添加常见 nvm 版本路径
+            // 扫描 ~/.nvm/versions/node/* ，避免硬编码版本在 .app 中漏检（逆序 insert，使高版本目录在 PATH 更前）
+            for bin in nvm_all_version_bins(&home_str).into_iter().rev() {
+                paths.insert(0, bin);
+            }
+            // 也添加常见 nvm 版本路径（兼容旧目录结构或扫描失败）
             for version in ["v22.22.0", "v22.12.0", "v22.11.0", "v22.0.0", "v23.0.0"] {
                 let nvm_bin = format!("{}/.nvm/versions/node/{}/bin", home_str, version);
-                if std::path::Path::new(&nvm_bin).exists() {
+                if Path::new(&nvm_bin).exists() {
                     paths.insert(0, nvm_bin);
                     break; // 只添加第一个存在的
                 }
@@ -76,6 +81,12 @@ pub fn get_extended_path() -> String {
 
             // mise
             paths.push(format!("{}/.local/share/mise/shims", home_str));
+
+            // npm 全局 bin（GUI 下常不在默认 PATH 中）
+            paths.push(format!("{}/.npm-global/bin", home_str));
+            paths.push(format!("{}/Library/pnpm", home_str));
+            paths.push(format!("{}/.pnpm/bin", home_str));
+            paths.push(format!("{}/.yarn/bin", home_str));
         }
     }
 
@@ -86,6 +97,27 @@ pub fn get_extended_path() -> String {
     }
 
     paths.join(separator)
+}
+
+/// `~/.nvm/versions/node` 下每个已安装版本的 `bin` 目录（目录名降序，高版本名通常更靠前）
+pub(crate) fn nvm_all_version_bins(home_str: &str) -> Vec<String> {
+    let base = format!("{}/.nvm/versions/node", home_str);
+    let Ok(entries) = std::fs::read_dir(&base) else {
+        return Vec::new();
+    };
+    let mut names: Vec<String> = entries
+        .filter_map(|e| e.ok())
+        .filter_map(|e| e.file_name().into_string().ok())
+        .collect();
+    names.sort_by(|a, b| b.cmp(a));
+    let mut out = Vec::new();
+    for name in names {
+        let bin = format!("{}/{}/bin", base, name);
+        if Path::new(&bin).is_dir() {
+            out.push(bin);
+        }
+    }
+    out
 }
 
 /// 执行 Shell 命令（带扩展 PATH）
@@ -350,6 +382,10 @@ fn get_unix_openclaw_paths() -> Vec<String> {
             }
         }
 
+        for bin in nvm_all_version_bins(&home_str) {
+            paths.push(format!("{}/openclaw", bin));
+        }
+
         // fnm
         paths.push(format!("{}/.fnm/aliases/default/bin/openclaw", home_str));
 
@@ -473,7 +509,7 @@ pub fn run_openclaw_with_timeout(args: &[&str], timeout: StdDuration) -> Result<
     let mut command = build_openclaw_command(args)?;
     let temp_dir = std::env::temp_dir();
     let unique = format!(
-        "openclaw-manager-{}-{}",
+        "ai-manager-{}-{}",
         std::process::id(),
         chrono::Utc::now().timestamp_nanos_opt().unwrap_or_default()
     );
@@ -732,11 +768,12 @@ pub fn spawn_openclaw_gateway() -> io::Result<()> {
 }
 
 /// 检查命令是否存在
+/// GUI / .app 启动时进程 PATH 极短，必须与 `run_command` 一样注入扩展 PATH，否则 which/where 恒为假阳性「未安装」
 pub fn command_exists(cmd: &str) -> bool {
+    let extended_path = get_extended_path();
     if platform::is_windows() {
-        // Windows: 使用 where 命令
         let mut command = Command::new("where");
-        command.arg(cmd);
+        command.arg(cmd).env("PATH", &extended_path);
 
         #[cfg(windows)]
         command.creation_flags(CREATE_NO_WINDOW);
@@ -746,9 +783,19 @@ pub fn command_exists(cmd: &str) -> bool {
             .map(|o| o.status.success())
             .unwrap_or(false)
     } else {
-        // Unix: 使用 which 命令
+        let mut command = Command::new("/usr/bin/which");
+        command.arg(cmd).env("PATH", &extended_path);
+        if command
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false)
+        {
+            return true;
+        }
+        // 部分系统无 /usr/bin/which，回退 PATH 已扩展的 `which`
         Command::new("which")
             .arg(cmd)
+            .env("PATH", &extended_path)
             .output()
             .map(|o| o.status.success())
             .unwrap_or(false)

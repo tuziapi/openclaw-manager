@@ -227,6 +227,10 @@ fn get_unix_node_paths() -> Vec<String> {
             }
         }
 
+        for bin in shell::nvm_all_version_bins(&home_str) {
+            paths.push(format!("{}/node", bin));
+        }
+
         // fnm
         paths.push(format!("{}/.fnm/aliases/default/bin/node", home_str));
 
@@ -766,7 +770,7 @@ if ($hasWinget) {
 }
 
 Write-Host ""
-Write-Host "安装完成后请重启 OpenClaw Manager" -ForegroundColor Green
+Write-Host "安装完成后请重启 AI Manager" -ForegroundColor Green
 Write-Host ""
 Read-Host "按回车键关闭此窗口"
 ' -Verb RunAs

@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // OpenClaw 品牌色
+        // 产品主色 claw（品牌红）
         claw: {
           50: '#fef3f2',
           100: '#fee4e2',

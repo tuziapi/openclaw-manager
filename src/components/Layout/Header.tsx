@@ -19,13 +19,13 @@ interface HeaderProps {
 }
 
 const openclawPageTitles: Record<OpenclawSubPageType, { title: string; description: string }> = {
-  dashboard: { title: 'OpenClaw / 服务概览', description: '服务状态、日志与快捷操作' },
-  ai: { title: 'OpenClaw / AI 配置', description: '配置 AI 提供商和模型' },
-  skills: { title: 'OpenClaw / Skills', description: '安装和维护 tuzi-skills 技能集' },
-  channels: { title: 'OpenClaw / 消息渠道', description: '配置 Telegram、Discord、飞书等' },
-  testing: { title: 'OpenClaw / 测试诊断', description: '系统诊断与问题排查' },
-  logs: { title: 'OpenClaw / 应用日志', description: '查看 Manager 应用的控制台日志' },
-  settings: { title: 'OpenClaw / 设置', description: '身份配置与高级选项' },
+  dashboard: { title: 'AI Manager / 服务概览', description: '服务状态、日志与快捷操作' },
+  ai: { title: 'AI Manager / AI 配置', description: '配置 AI 提供商和模型' },
+  skills: { title: 'AI Manager / Skills', description: '安装和维护 tuzi-skills 技能集' },
+  channels: { title: 'AI Manager / 消息渠道', description: '配置 Telegram、Discord、飞书等' },
+  testing: { title: 'AI Manager / 测试诊断', description: '系统诊断与问题排查' },
+  logs: { title: 'AI Manager / 应用日志', description: '查看 AI Manager 应用的控制台日志' },
+  settings: { title: 'AI Manager / 设置', description: '身份配置与高级选项' },
 };
 
 const claudecodePageTitles: Record<ClaudeCodeSubPageType, { title: string; description: string }> = {
@@ -50,7 +50,7 @@ function getHeaderMeta(
   activeCodexSubPage: CodexSubPageType
 ) {
   if (view === 'module_center') {
-    return { title: '模块总览', description: '查看并进入 OpenClaw、ClaudeCode、Codex 模块' };
+    return { title: '模块总览', description: '查看并进入 OpenClaw、Claude Code、Codex 模块' };
   }
 
   if (view === 'openclaw_page') {

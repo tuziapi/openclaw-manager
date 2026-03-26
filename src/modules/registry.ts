@@ -26,7 +26,7 @@ export const MODULE_REGISTRY: ModuleDefinition[] = [
       {
         id: 'openclaw_setup',
         label: '运行安装与配置向导',
-        description: '使用内置向导完成 Node.js/OpenClaw 安装与 Tuzi 快速接入。',
+        description: '使用 AI Manager 内置向导完成 Node.js / OpenClaw 安装与 Tuzi 快速接入。',
       },
     ],
   },

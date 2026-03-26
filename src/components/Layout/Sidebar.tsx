@@ -104,8 +104,7 @@ export function Sidebar({
             <span className="text-lg">🧩</span>
           </div>
           <div>
-            <h1 className="text-sm font-semibold text-white">AI Tool</h1>
-            <p className="text-xs text-gray-500">Manager</p>
+            <h1 className="text-sm font-semibold text-white">AI Manager</h1>
           </div>
         </div>
       </div>

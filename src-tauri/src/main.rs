@@ -14,7 +14,7 @@ fn main() {
     // 初始化日志 - 默认显示 info 级别日志
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
-    log::info!("🦞 OpenClaw Manager 启动");
+    log::info!("🦞 AI Manager 启动");
 
     if let Err(err) = config::sync_model_registry_on_startup() {
         log::warn!("启动时同步模型 registry 与 fallbacks 失败: {}", err);

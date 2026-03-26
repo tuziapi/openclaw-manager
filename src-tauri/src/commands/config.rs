@@ -226,7 +226,7 @@ fn rewrite_env_file(env_pairs: &[(String, String)]) -> Result<(), String> {
     let mut lines = vec![
         "# OpenClaw 环境变量配置".to_string(),
         format!(
-            "# 由 OpenClaw Manager 自动生成: {}",
+            "# 由 AI Manager 自动生成: {}",
             chrono::Local::now().format("%Y-%m-%d %H:%M:%S")
         ),
     ];
@@ -2299,7 +2299,7 @@ mod tests {
         fn new() -> Self {
             let lock = home_env_lock().lock().expect("lock home env");
             let temp_home = std::env::temp_dir().join(format!(
-                "openclaw-manager-tests-{}",
+                "ai-manager-tests-{}",
                 std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)
                     .expect("valid time")

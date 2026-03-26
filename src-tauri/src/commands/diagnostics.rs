@@ -521,7 +521,7 @@ pub async fn test_channel(channel_type: String) -> Result<ChannelTestResult, Str
     if let Some(target) = test_target {
         info!("[渠道测试] 步骤3: 发送测试消息到 {}...", target);
         let timestamp = chrono::Local::now().format("%Y-%m-%d %H:%M:%S");
-        let message = format!("🤖 OpenClaw 测试消息\n\n✅ 连接成功！\n⏰ {}", timestamp);
+        let message = format!("🤖 AI Manager 测试消息\n\n✅ 连接成功！\n⏰ {}", timestamp);
 
         // 使用 openclaw message send 发送测试消息
         info!(
@@ -648,7 +648,7 @@ pub async fn send_test_message(
     target: String,
 ) -> Result<ChannelTestResult, String> {
     let timestamp = chrono::Local::now().format("%Y-%m-%d %H:%M:%S");
-    let message = format!("🤖 OpenClaw 测试消息\n\n✅ 连接成功！\n⏰ {}", timestamp);
+    let message = format!("🤖 AI Manager 测试消息\n\n✅ 连接成功！\n⏰ {}", timestamp);
 
     // 使用 openclaw message send 命令发送测试消息
     let send_result = shell::run_openclaw(&[
