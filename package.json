@@ -1,6 +1,6 @@
 {
   "name": "ai-manager",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "AI Manager — 跨平台桌面应用，统一管理 AI 助手、OpenClaw 服务与 Claude Code / Codex 等模块",
   "author": "Tuzi API",
   "license": "MIT",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.16 - 2026-03-27
+
+- feat: 为 AI Manager 添加自动更新功能
+- docs: enhance README with one-click installation script and environment variables
+- chore: add release script to package.json
+
 ## 0.0.15 - 2026-03-26
 
 - refactor: rename OpenClaw Manager to AI Manager and update related documentation
